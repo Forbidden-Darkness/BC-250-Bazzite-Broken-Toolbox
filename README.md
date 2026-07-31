@@ -4,4 +4,8 @@ cd BC-250-Bazzite-Setup-Scripts/
 
 chmod +x *.sh
 
-sudo ./script-name.sh
+sudo ./BC-250 CPU&CU Overclock-Live Manager.sh
+
+or
+
+sudo ./Install-Blue-Red-Pill-16or32GB-ACPI_Fix-Option.sh
