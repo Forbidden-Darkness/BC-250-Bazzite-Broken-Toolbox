@@ -11,4 +11,5 @@ or
 sudo ./Install-Blue-Red-Pill-16or32GB-ACPI_Fix-Option.sh
 
 or
+
 sudo ./enable_wol.sh
