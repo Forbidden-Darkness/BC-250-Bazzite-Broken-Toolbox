@@ -77,9 +77,10 @@ launch_tuning_menu() {
         echo "2) 36/38CU Model (3500 MHz @ 980 mV, Max 82°C)"
         echo "3) 36/38CU Model (3500 MHz @ 1015 mV, Max 85°C)"
         echo "4) 36/38CU Model (3500 MHz @ 1020 mV, Max 85°C)"
-        echo "5) Skip auto-tuning (Return to Main Menu)"
+        echo "5) 36/38CU Model (3500 MHz @ 1050 mV, Max 85°C)"
+        echo "6) Skip auto-tuning (Return to Main Menu)"
         echo ""
-        read -p "Enter selection [1-4]: " tune_choice
+        read -p "Enter selection [1-6]: " tune_choice
 
         case "$tune_choice" in
             1)
@@ -107,6 +108,12 @@ launch_tuning_menu() {
                 break
                 ;;
             5)
+                log "${GREEN}Launching 36/38CU profile optimization...${NC}"
+                bc250-detect --frequency 3500 --vid 1050 -t 85 --keep
+                finalize_settings
+                break
+                ;;
+            6)
                 log "${YELLOW}Skipped auto-tuning. Returning to main menu.${NC}"
                 break
                 ;;
