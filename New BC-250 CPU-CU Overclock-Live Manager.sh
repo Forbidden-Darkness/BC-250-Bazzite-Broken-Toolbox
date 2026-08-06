@@ -22,6 +22,18 @@ if [ "$EUID" -ne 0 ]; then
     echo -e "Please run: sudo bash $0${NC}"
     exit 1
 fi
+
+# ==========================================
+# FIX: Define the missing environment context
+# ==========================================
+REAL_USER="${SUDO_USER:-$USER}"
+REAL_HOME=$(getent passwd "$REAL_USER" | cut -d: -f6)
+
+print_info() {
+    echo -e "${GREEN}[INFO] $1${NC}"
+}
+# ==========================================
+
 # Configuration
 LOG_FILE="/var/log/bc250_oc_install.log"
 REPO_URL="https://github.com/bc250-collective/bc250_smu_oc.git"
@@ -32,6 +44,38 @@ SCRIPT_PATH=$(realpath "$0")
 log() {
     echo -e "$1" | tee -a "$LOG_FILE"
 }
+
+ensure_desktop_shortcut() {
+    local desktop_dir
+    # Uses the correct user context to find the true Desktop path
+    desktop_dir="$(sudo -u "$REAL_USER" xdg-user-dir DESKTOP 2>/dev/null || echo "")"
+    [[ -n "$desktop_dir" ]] || desktop_dir="$REAL_HOME/Desktop"
+    [[ -d "$desktop_dir" ]] || mkdir -p "$desktop_dir" 2>/dev/null || return 0
+
+    local shortcut="$desktop_dir/BC-250 Overclock Toolkit.desktop"
+    if [[ -f "$shortcut" ]] && grep -q '^Exec=konsole --hold -e sudo bash ' "$shortcut"; then
+        return 0
+    fi
+
+    cat > "$shortcut" <<SHORTCUT_EOF
+[Desktop Entry]
+Type=Application
+Name=BC-250 Overclock Real Toolkit
+Comment=CPU/GPU for the BC-250
+Exec=konsole --hold -e sudo bash "$SCRIPT_PATH"
+Icon=utilities-terminal
+Terminal=false
+Categories=System;
+SHORTCUT_EOF
+
+    chmod +x "$shortcut"
+    chown "$REAL_USER":"$REAL_USER" "$shortcut" 2>/dev/null || true
+    sudo -u "$REAL_USER" gio set "$shortcut" metadata::trusted true >/dev/null 2>&1 || true
+    print_info "Desktop shortcut created: $shortcut"
+}
+
+# Run the function to test
+ensure_desktop_shortcut
 
 # Warning message reflecting official repository safety parameters
 show_warning() {
