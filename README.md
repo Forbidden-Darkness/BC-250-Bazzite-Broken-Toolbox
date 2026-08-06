@@ -1,8 +1,8 @@
 git clone https://github.com/Forbidden-Darkness/BC-250-Bazzite-Broken-Toolbox.git
 
-cd BC-250-Bazzite-Broken-Toolbox/ && chmod +x *.sh && sudo ./New-Install-Blue-Red-Pill.sh
+cd BC-250-Bazzite-Broken-Toolbox/ && chmod +x *.sh && sudo ./New-Install-Blue-Red-Pill-ACPI-Fix.sh
 
-Example: sudo ./New-Install-Blue-Red-Pill.sh 
+Example: sudo ./New-Install-Blue-Red-Pill-ACPI-Fix.sh 
 
 bc250-gfxclk-fix created by Punsh:
 
