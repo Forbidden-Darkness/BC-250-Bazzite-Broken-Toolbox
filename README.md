@@ -26,3 +26,7 @@ sudo ./New-Enable_WOL.sh
 or
 
 sudo ./New-Install-Blue-Red-Pill-ACPI-Fix.sh
+
+bc250-gfxclk-fix created by Punsh:
+
+Corrects GPU frequency reporting on the AMD BC-250 (Cyan Skillfish / gfx1013) board when all 8 physical CPU cores are enabled, on Bazzite / SteamOS-style image-based (immutable) distros where rebuilding `amdgpu.ko` isn't practical.
