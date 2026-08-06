@@ -13,3 +13,16 @@ sudo ./Install-Blue-Red-Pill-16or32GB-ACPI_Fix-Option.sh
 or
 
 sudo ./enable_wol.sh
+
+or
+
+
+New-BC250 Overclock-Live-Manager.sh
+
+or
+
+New-Enable_WOL.sh
+
+or
+
+New-Install-Blue-Red-Pill-ACPI-Fix.sh
