@@ -1,8 +1,6 @@
 git clone https://github.com/Forbidden-Darkness/BC-250-Bazzite-Broken-Toolbox.git
 
-cd BC-250-Bazzite-Setup-Scripts/
-
-chmod +x *.sh
+cd BC-250-Bazzite-Broken-Toolbox/ && chmod +x *.sh && sudo ./New-Install-Blue-Red-Pill.sh
 
 Example: sudo ./New-Install-Blue-Red-Pill.sh 
 
