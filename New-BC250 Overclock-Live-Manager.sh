@@ -102,10 +102,6 @@ finalize_settings() {
     echo -e "${YELLOW}--- Current SMU Service Status ${RED}Ctrl+c then press enter to return to menu ---${NC}"
     sudo systemctl status bc250-smu-oc.service
     read -p "Press [Enter] to return to the tuning menu..."
-
-    #echo -e "${YELLOW}--- Current SMU Service Status ---${NC}"
-    #sudo systemctl status bc250-smu-oc.service
-    #read -p "Press [Enter] to return to the tuning menu..."
 }
 
 # Post-Detection Stress Function
@@ -120,13 +116,9 @@ stress_settings() {
     echo -e "${YELLOW}--- Current SMU Service Status ${RED}Ctrl+c then press enter to return to menu ---${NC}"
     sudo systemctl status bc250-smu-oc.service
     read -p "Press [Enter] to return to the tuning menu..."
-
-    #echo -e "${YELLOW}--- Current SMU Service Status ---${NC}"
-    #sudo systemctl status bc250-smu-oc.service
-    #read -p "Press [Enter] to return to the tuning menu..."
 }
 
-# Interactive Tuning Menu (Fixed and cleanly looping back to main menu loop)
+# Interactive Tuning Menu
 launch_tuning_menu() {
     while true; do
         clear
@@ -142,7 +134,7 @@ launch_tuning_menu() {
         echo "5) 36/38CU Model (3500 MHz @ 1050 mV, Max 85°C)"
         echo -e "${BIGreen}6) Manual Custom Profile (Manually fill MHz, mV, Max Temp)${NC}"
         echo -e "${BIGreen}7) Manual Test Custom Profile (Manually fill MHz, mV, Max Temp)${NC}"
-        echo "8) Skip auto-tuning (Return to Main Menu)"
+        echo "8) Skip auto-tuning & Return to Main Menu"
         echo ""
         read -p "Enter selection [1-8]: " tune_choice
 
@@ -151,33 +143,28 @@ launch_tuning_menu() {
                 log "${GREEN}Launching 40CU profile optimization...${NC}"
                 bc250-detect --frequency 3500 --vid 1000 -t 85 --keep
                 finalize_settings
-                break
                 ;;
             2)
                 log "${GREEN}Launching 36/38CU profile optimization...${NC}"
                 bc250-detect --frequency 3500 --vid 980 -t 82 --keep
                 finalize_settings
-                break
                 ;;
             3)
                 log "${GREEN}Launching 36/38CU profile optimization...${NC}"
                 bc250-detect --frequency 3500 --vid 1015 -t 85 --keep
                 finalize_settings
-                break
                 ;;
             4)
                 log "${GREEN}Launching 36/38CU profile optimization...${NC}"
                 bc250-detect --frequency 3500 --vid 1020 -t 85 --keep
                 finalize_settings
-                break
                 ;;
             5)
                 log "${GREEN}Launching 36/38CU profile optimization...${NC}"
                 bc250-detect --frequency 3500 --vid 1050 -t 85 --keep
                 finalize_settings
-                break
                 ;;
-            6)
+            6|7)
                 clear
                 echo -e "${YELLOW}====================================================${NC}"
                 echo -e "${YELLOW}             CUSTOM PROFILE CONFIGURATION           ${NC}"
@@ -208,80 +195,41 @@ launch_tuning_menu() {
                     fi
                 done
 
-                # Input and Validate Max Target Temperature
+                # Input and Validate Max Temperature Limit
                 while true; do
                     read -p "Enter Max Temperature Target (°C) [e.g., 85]: " custom_temp
-                    if [[ "$custom_temp" =~ ^[0-9]+$ ]] && [ "$custom_temp" -gt 0 ]; then
+                    if [[ "$custom_temp" =~ ^[0-9]+$ ]] && [ "$custom_temp" -gt 0 ] && [ "$custom_temp" -lt 105 ]; then
                         break
                     else
-                        echo -e "${RED}Invalid input. Please enter a valid number for Max Temperature.${NC}"
+                        echo -e "${RED}Invalid input. Please enter a safe temperature limit below 105°C.${NC}"
                     fi
                 done
 
-                echo ""
-                log "${GREEN}Launching custom profile optimization (${custom_freq} MHz @ ${custom_vid} mV, Max ${custom_temp}°C)...${NC}"
+                log "${GREEN}Running custom tuning profile optimization...${NC}"
                 bc250-detect --frequency "$custom_freq" --vid "$custom_vid" -t "$custom_temp" --keep
-                finalize_settings
-                break
-                ;;
-            7)
-                clear
-                echo -e "${YELLOW}====================================================${NC}"
-                echo -e "${YELLOW}          STRESSING PROFILE CONFIGURATION           ${NC}"
-                echo -e "${YELLOW}====================================================${NC}"
-                echo ""
 
-                # Input and Validate Frequency (MHz)
-                while true; do
-                    read -p "Enter Target Frequency (MHz) [e.g., 3500]: " custom_freq
-                    if [[ "$custom_freq" =~ ^[0-9]+$ ]] && [ "$custom_freq" -gt 0 ]; then
-                        break
-                    else
-                        echo -e "${RED}Invalid input. Please enter a valid number for MHz.${NC}"
-                    fi
-                done
-
-                # Input and Validate VID (mV) with strict safety rail
-                while true; do
-                    read -p "Enter Target Voltage (mV / VID) [e.g., 1000]: " custom_vid
-                    if [[ "$custom_vid" =~ ^[0-9]+$ ]] && [ "$custom_vid" -gt 0 ]; then
-                        if [ "$custom_vid" -gt 1325 ]; then
-                            echo -e "${RED}SAFETY ERROR: Voltage cannot exceed 1325 mV!${NC}"
-                        else
-                            break
-                        fi
-                    else
-                        echo -e "${RED}Invalid input. Please enter a valid number for mV.${NC}"
-                    fi
-                done
-
-                # Input and Validate Max Target Temperature
-                while true; do
-                    read -p "Enter Max Temperature Target (°C) [e.g., 85]: " custom_temp
-                    if [[ "$custom_temp" =~ ^[0-9]+$ ]] && [ "$custom_temp" -gt 0 ]; then
-                        break
-                    else
-                        echo -e "${RED}Invalid input. Please enter a valid number for Max Temperature.${NC}"
-                    fi
-                done
-
-                echo ""
-                log "${GREEN}Launching custom profile optimization (${custom_freq} MHz @ ${custom_vid} mV, Max ${custom_temp}°C)...${NC}"
-                bc250-detect --frequency "$custom_freq" --vid "$custom_vid" -t "$custom_temp"
-                stress_settings
-                break
+                if [ "$tune_choice" = "7" ]; then
+                    stress_settings
+                else
+                    finalize_settings
+                fi
                 ;;
             8)
-                log "${YELLOW}Skipped auto-tuning. Returning to main menu.${NC}"
-                break
+                read -p "Returning to Main Menu Press [Enter] to continue..."
+                echo "Pausing for 5 seconds..."
+                sleep 5
+                return 0
                 ;;
             *)
-                echo -e "${RED}Invalid option. Please enter a choice between 1 and 7.${NC}"
+                echo -e "${RED}Invalid option selected. Please enter [1-8].${NC}"
                 sleep 2
                 ;;
         esac
     done
 }
+
+# --- Script Initiation Path ---
+show_warning
 
 # Phase 1: Initial Install
 run_phase1() {
@@ -468,6 +416,7 @@ while true; do
     elif [ "$choice" == "5" ]; then
         run_uninstall
     elif [ "$choice" == "6" ] || [ -z "$choice" ]; then
+    # Note: Run the script once manually to rewrite the .desktop shortcut file on your desktop.
         echo "Exiting."
         exit 0
     else
