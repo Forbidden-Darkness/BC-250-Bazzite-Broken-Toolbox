@@ -17,12 +17,12 @@ sudo ./enable_wol.sh
 or
 
 
-New-BC250 Overclock-Live-Manager.sh
+sudo ./New-BC250 Overclock-Live-Manager.sh
 
 or
 
-New-Enable_WOL.sh
+sudo ./New-Enable_WOL.sh
 
 or
 
-New-Install-Blue-Red-Pill-ACPI-Fix.sh
+sudo ./New-Install-Blue-Red-Pill-ACPI-Fix.sh
