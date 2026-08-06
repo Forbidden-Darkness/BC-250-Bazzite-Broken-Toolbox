@@ -1,4 +1,4 @@
-git clone https://github.com/Forbidden-Darkness/BC-250-Bazzite-Setup-Scripts.git
+git clone https://github.com/Forbidden-Darkness/BC-250-Bazzite-Broken-Toolbox.git
 
 cd BC-250-Bazzite-Setup-Scripts/
 
